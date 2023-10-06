@@ -25,7 +25,7 @@ Create SQL Database:
 ```
 az sql server create -g rgapp -n sqlspassworldless789 -l eastus --admin-user sqladmin --admin-password P4ssw0rd789
 az sql server firewall-rule create -g rgapp -s sqlspassworldless789 -n AllowAll --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.0
-az sql db create -g rgapp -s sqlspassworldless789 -n sqldbpassworldless789 --sample-name AdventureWorksLT --edition Basic --capacity 5
+az sql db create -g rgapp -s sqlspassworldless789 -n sqldbpassworldless789 --sample-name AdventureWorksLT --edition Basic --capacity 5 --bsr Local
 ```
 
 Add the AD admin previously created to the SQL Database server
@@ -76,3 +76,38 @@ az webapp deployment source config-zip -g rgapp -n apppassworldless789 --src ./b
 ```
 
 Once ready, call the `/api/icecream` endpoint.
+
+## Database-level roles
+
+When creating database users, SQL offers native [database-level roles][1]. Commands below are based off of [this][2] article.
+
+Run it from the `master` database:
+
+```sql
+-- create SQL login in master database
+CREATE LOGIN [USERNAME]
+WITH PASSWORD = '*****';
+```
+
+Now, from the application database:
+
+```sql
+-- add database user for login [USERNAME]
+CREATE USER [USERNAME]
+FROM LOGIN [USERNAME]
+WITH DEFAULT_SCHEMA=dbo;
+```
+
+Assign roles:
+
+```sql
+-- add user to database role(s)
+ALTER ROLE db_ddladmin ADD MEMBER [USERNAME];
+ALTER ROLE db_datawriter ADD MEMBER [USERNAME];
+ALTER ROLE db_datareader ADD MEMBER [USERNAME];
+```
+
+User is ready. It is necessary to inform the database name during authentication.
+
+[1]: https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/database-level-roles
+[2]: https://www.sqlnethub.com/blog/creating-azure-sql-database-logins-and-users/
