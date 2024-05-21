@@ -52,6 +52,7 @@ module "private_endpoints" {
   vnet_id                     = module.vnet.vnet_id
   mssql_server_id             = module.mssql.server_id
   private_endpoints_subnet_id = module.vnet.private_endpoints_subnet_id
+  keyvault_id                 = module.keyvault.id
 }
 
 module "webapp" {
