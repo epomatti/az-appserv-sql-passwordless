@@ -110,7 +110,7 @@ export acr="crcontosojqanh"
 Login to ACR using the Virtual Machine [identity][3]:
 
 > [!TIP]
-> Make sure to add `sudo` to the login, other ACR commands will fail like in [here][4].
+> Make sure to add `sudo` to the login or other ACR commands will fail like in [here][4].
 
 ```sh
 sudo az login --identity
