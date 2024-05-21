@@ -17,7 +17,3 @@ variable "private_endpoints_subnet_id" {
 variable "mssql_server_id" {
   type = string
 }
-
-variable "keyvault_id" {
-  type = string
-}

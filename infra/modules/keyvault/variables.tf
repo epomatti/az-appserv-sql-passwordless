@@ -26,3 +26,11 @@ variable "docker_container_app_password" {
   type      = string
   sensitive = true
 }
+
+variable "vnet_id" {
+  type = string
+}
+
+variable "private_endpoints_subnet_id" {
+  type = string
+}
