@@ -68,7 +68,16 @@ GO
 
 
 
+
+
+```sh
+bash build.sh
+az webapp deploy -g rg-contoso-8hkgb -n app-contoso-8hkgb --type zip --src-path ./bin/webapi.zip
+```
+
 curl <appservice>/api/icecream
+
+
 
 
 
