@@ -127,6 +127,13 @@ sudo docker pull crcontosojqanh.azurecr.io/icecream:latest
 sudo docker run -p 8080:8080 crcontosojqanh.azurecr.io/icecream:latest
 ```
 
+
+
+```sh
+# Identifier uri, application id, or object id
+az ad app credential reset --id 00000000-0000-0000-0000-000000000000 --append
+```
+
 ## Database-level roles
 
 When creating database users, SQL offers native [database-level roles][1]. Commands below are based off of [this][2] article.

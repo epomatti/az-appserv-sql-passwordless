@@ -85,3 +85,25 @@ module "vm_linux" {
   public_key            = local.public_key
   container_registry_id = module.acr.id
 }
+
+module "entra" {
+  source = "./modules/entra"
+}
+
+resource "azurerm_role_assignment" "docker_containers_acr_pull" {
+  scope                = module.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = module.entra.docker_container_service_principal_id
+}
+
+module "keyvault" {
+  count                                 = var.enable_virtual_machine ? 1 : 0
+  source                                = "./modules/keyvault"
+  workload                              = local.workload
+  resource_group_name                   = azurerm_resource_group.default.name
+  location                              = azurerm_resource_group.default.location
+  admin_ip_address                      = var.admin_ip_address
+  virtual_machine_identity_principal_id = module.vm_linux[0].identity_principal_id
+  docker_container_app_id               = module.entra.docker_container_client_id
+  docker_container_app_password         = module.entra.docker_container_app_password
+}
