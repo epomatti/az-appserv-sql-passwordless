@@ -2,6 +2,29 @@
 
 Full demonstration of how to connect from App Service via System-Assigned identity to Azure SQL Database. Guidelines used from [this article](https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-azure-database?tabs=sqldatabase%2Csystemassigned%2Cnetfx%2Cwindowsclient).
 
+Copy the `.auto.tfvars` template file:
+
+```sh
+cp infra/config/template.tfvars infra/.auto.tfvars
+```
+
+Create the VM SSH keys:
+
+```sh
+mkdir infra/keys
+ssh-keygen -f infra/keys/temp_key
+chmod 600 infra/keys/temp_key
+```
+
+Create the infrastructure:
+
+```sh
+terraform -chdir="infra" init
+terraform -chdir="infra" apply -auto-approve
+```
+
+
+
 
 Create the base resources:
 
