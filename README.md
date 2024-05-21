@@ -2,6 +2,8 @@
 
 Full demonstration of how to connect from App Service via System-Assigned identity to Azure SQL Database. Guidelines used from [this article](https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-azure-database?tabs=sqldatabase%2Csystemassigned%2Cnetfx%2Cwindowsclient).
 
+## Infrastructure
+
 Copy the `.auto.tfvars` template file:
 
 ```sh
@@ -22,6 +24,54 @@ Create the infrastructure:
 terraform -chdir="infra" init
 terraform -chdir="infra" apply -auto-approve
 ```
+
+## Permissions
+
+Following the commands: https://learn.microsoft.com/en-us/azure/azure-sql/database/authentication-azure-ad-logins-tutorial?view=azuresql
+
+### SQL Server
+use th **name** oof the app
+
+```sql
+Use master
+CREATE LOGIN [app-contoso-8hkgb] FROM EXTERNAL PROVIDER
+GO
+```
+
+```sql
+SELECT name, type_desc, type, is_disabled 
+FROM sys.server_principals
+WHERE type_desc like 'external%'  
+```
+
+### SQL Database
+
+```sql
+CREATE USER [app-contoso-8hkgb] FROM LOGIN [app-contoso-8hkgb]
+```
+
+```sql
+SELECT name, type_desc, type 
+FROM sys.database_principals 
+WHERE type_desc like 'external%'
+```
+
+```sql
+ALTER ROLE db_datareader ADD MEMBER [app-contoso-8hkgb];
+ALTER ROLE db_datawriter ADD MEMBER [app-contoso-8hkgb];
+ALTER ROLE db_ddladmin ADD MEMBER [app-contoso-8hkgb];
+GO
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -45,7 +95,7 @@ az ad user create --display-name appservadmin --password P4ssw0rd789 --user-prin
 
 Create SQL Database:
 
-```
+```sh
 az sql server create -g rgapp -n sqlspassworldless789 -l eastus --admin-user sqladmin --admin-password P4ssw0rd789
 az sql server firewall-rule create -g rgapp -s sqlspassworldless789 -n AllowAll --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.0
 az sql db create -g rgapp -s sqlspassworldless789 -n sqldbpassworldless789 --sample-name AdventureWorksLT --edition Basic --capacity 5 --bsr Local
@@ -53,13 +103,13 @@ az sql db create -g rgapp -s sqlspassworldless789 -n sqldbpassworldless789 --sam
 
 Add the AD admin previously created to the SQL Database server
 
-```
+```sh
 az sql server ad-admin create -g rgapp -s sqlspassworldless789 --display-name ADMIN --object-id <id>
 ```
 
 Create the App Service:
 
-```
+```sh
 az appservice plan create -g rgapp -n planapp --is-linux --sku B1
 az webapp create -g rgapp -p planapp -n apppassworldless789 -r "DOTNETCORE:7.0" --https-only
 az webapp config set -g rgapp -n apppassworldless789 --always-on true
@@ -67,7 +117,7 @@ az webapp config set -g rgapp -n apppassworldless789 --always-on true
 
 Assign the system identity:
 
-```
+```sh
 az webapp identity assign -g rgapp -n apppassworldless789
 ```
 

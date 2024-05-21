@@ -54,13 +54,15 @@ module "private_endpoints" {
 }
 
 module "webapp" {
-  count               = var.enable_webapp ? 1 : 0
-  source              = "./modules/webapp"
-  workload            = local.workload
-  resource_group_name = azurerm_resource_group.default.name
-  location            = azurerm_resource_group.default.location
-  sku_name            = var.webapp_plan_sku_name
-  subnet_id           = module.vnet.webapp_subnet_id
+  count                             = var.enable_webapp ? 1 : 0
+  source                            = "./modules/webapp"
+  workload                          = local.workload
+  resource_group_name               = azurerm_resource_group.default.name
+  location                          = azurerm_resource_group.default.location
+  sku_name                          = var.webapp_plan_sku_name
+  subnet_id                         = module.vnet.webapp_subnet_id
+  mssql_fully_qualified_domain_name = module.mssql.fully_qualified_domain_name
+  mssql_database_name               = module.mssql.database_name
 }
 
 module "vm_linux" {

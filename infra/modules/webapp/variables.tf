@@ -17,3 +17,11 @@ variable "sku_name" {
 variable "subnet_id" {
   type = string
 }
+
+variable "mssql_fully_qualified_domain_name" {
+  type = string
+}
+
+variable "mssql_database_name" {
+  type = string
+}

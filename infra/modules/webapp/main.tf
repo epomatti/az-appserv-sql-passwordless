@@ -32,5 +32,7 @@ resource "azurerm_linux_web_app" "main" {
   app_settings = {
     DOCKER_ENABLE_CI = true
     WEBSITES_PORT    = "80"
+    MSSQL_FQDN       = var.mssql_fully_qualified_domain_name
+    MSSQL_DB_NAME    = var.mssql_database_name
   }
 }
