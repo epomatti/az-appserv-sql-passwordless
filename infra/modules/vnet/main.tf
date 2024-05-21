@@ -36,7 +36,7 @@ resource "azurerm_subnet" "private_endpoints" {
   name                 = "private-endpoints"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.default.name
-  address_prefixes     = ["10.0.90.0/24"]
+  address_prefixes     = ["${local.cidr_prefix}.90.0/24"]
 }
 
 ### Network Security Group ###
@@ -60,7 +60,7 @@ resource "azurerm_network_security_rule" "inbound_ssh" {
   protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_ranges     = [22]
-  source_address_prefix       = "*"
+  source_address_prefixes     = [var.admin_ip_address]
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group_name
   network_security_group_name = azurerm_network_security_group.default.name
