@@ -25,14 +25,16 @@ resource "azurerm_linux_web_app" "main" {
     health_check_path = "/"
 
     application_stack {
-      docker_image_name = "index.docker.io/nginx:latest"
+      # docker_image_name = "index.docker.io/nginx:latest"
+      dotnet_version = "8.0"
     }
   }
 
   app_settings = {
-    DOCKER_ENABLE_CI = true
-    WEBSITES_PORT    = "80"
-    MSSQL_FQDN       = var.mssql_fully_qualified_domain_name
-    MSSQL_DB_NAME    = var.mssql_database_name
+    DOCKER_ENABLE_CI         = false
+    WEBSITE_RUN_FROM_PACKAGE = "1"
+    # WEBSITES_PORT            = "80"
+    MSSQL_FQDN               = var.mssql_fully_qualified_domain_name
+    MSSQL_DB_NAME            = var.mssql_database_name
   }
 }

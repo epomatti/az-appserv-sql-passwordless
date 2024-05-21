@@ -18,10 +18,13 @@ public class IcecreamController : ControllerBase
   [HttpGet(Name = "GetIcecream")]
   public IcecreamResponse Get()
   {
-    var serverName = "sqlspassworldless789";
-    var databaseName = "sqldbpassworldless789";
+    var fqdn = Environment.GetEnvironmentVariable("MSSQL_FQDN");
+    var databaseName = Environment.GetEnvironmentVariable("MSSQL_DB_NAME");
 
-    SqlConnection connection = new SqlConnection($"Server=tcp:{serverName}.database.windows.net;Database={databaseName};Authentication=Active Directory Default;TrustServerCertificate=True");
+    Console.WriteLine($"FQDN: {fqdn}");
+    Console.WriteLine($"Database Name: {databaseName}");
+
+    SqlConnection connection = new SqlConnection($"Server=tcp:{fqdn};Database={databaseName};Authentication=Active Directory Default;TrustServerCertificate=True");
 
     // Open the SQL connection
     connection.Open();

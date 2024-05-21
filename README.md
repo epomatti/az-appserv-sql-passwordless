@@ -68,6 +68,8 @@ GO
 
 
 
+curl <appservice>/api/icecream
+
 
 
 
