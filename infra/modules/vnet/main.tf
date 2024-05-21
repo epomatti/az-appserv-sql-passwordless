@@ -59,7 +59,7 @@ resource "azurerm_network_security_rule" "inbound_ssh" {
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_ranges     = [22]
+  destination_port_ranges     = [22,8080]
   source_address_prefixes     = [var.admin_ip_address]
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group_name

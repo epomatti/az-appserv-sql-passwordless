@@ -94,12 +94,25 @@ curl <appservice>/api/icecream
 ## Virtual Machine + Docker
 
 > [!NOTE]
-> Steps for this configuration are detailed in [this][5] article.
+> Steps for this configuration are detailed in [this][5] article. SQL Server authentication with [service principle][6] is used.
 
 To create the Virtual Machine, change the control variable and `apply`.
 
 ```terraform
 enable_virtual_machine = true
+```
+
+> [!IMPORTANT]
+> Repeat the steps below for the service principal. Steps also detailed in the App Services section to authorized the service principal authentication to the database.
+
+```sql
+-- master
+CREATE LOGIN [docker-containers] FROM EXTERNAL PROVIDER
+-- database
+CREATE USER [docker-containers] FROM LOGIN [docker-containers]
+ALTER ROLE db_datareader ADD MEMBER [docker-containers];
+ALTER ROLE db_datawriter ADD MEMBER [docker-containers];
+ALTER ROLE db_ddladmin ADD MEMBER [docker-containers];
 ```
 
 Check if Docker and the Azure CLI installation was successful.
@@ -145,8 +158,14 @@ Save it locally:
 nano /tmp/icecream-webapi/config.json
 ```
 
+Run the container:
 
+```sh
+# Run from the configuration directory
+sudo docker run -p 8080:8080 -v "$(pwd):/app" -e CONFIG_FILE=/app/config.json crcontosojqanh.azurecr.io/icecream:latest
+```
 
+If necessary, here's a command to create/reset secrets:
 
 ```sh
 # Identifier uri, application id, or object id
@@ -198,10 +217,11 @@ terraform destroy -auto-approve
 
 - [Create and utilize Microsoft Entra server logins](https://learn.microsoft.com/en-us/azure/azure-sql/database/authentication-azure-ad-logins-tutorial?view=azuresql)
 - [Connect to Azure databases from App Service without secrets using a managed identity](https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-azure-database?tabs=sqldatabase%2Csystemassigned%2Cnetfx%2Cwindowsclient)
-
+- [Setup a Microsoft Azure SQL Database Service Principal](https://querysurge.zendesk.com/hc/en-us/articles/5068382921869-Setup-a-Microsoft-Azure-SQL-Database-Service-Principal-Versions-9-0)
 
 [1]: https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/database-level-roles
 [2]: https://www.sqlnethub.com/blog/creating-azure-sql-database-logins-and-users/
 [3]: https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli-managed-identity
 [4]: https://github.com/Azure/acr/issues/367#issuecomment-614232197
 [5]: https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication-managed-identity?tabs=azure-cli
+[6]: https://learn.microsoft.com/en-us/sql/connect/ado-net/sql/azure-active-directory-authentication?view=sql-server-ver16#using-service-principal-authentication
