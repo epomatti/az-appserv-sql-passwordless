@@ -63,3 +63,16 @@ resource "azurerm_linux_virtual_machine" "default" {
     ]
   }
 }
+
+resource "azurerm_role_assignment" "acr_pull" {
+  scope                = var.container_registry_id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_linux_virtual_machine.default.identity[0].principal_id
+}
+
+# TODO: Confirm if this is required due to Azure CLI commands
+resource "azurerm_role_assignment" "contributor" {
+  scope                = var.container_registry_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_linux_virtual_machine.default.identity[0].principal_id
+}

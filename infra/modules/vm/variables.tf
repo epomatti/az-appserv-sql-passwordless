@@ -25,3 +25,7 @@ variable "image_sku" {
 variable "public_key" {
   type = string
 }
+
+variable "container_registry_id" {
+  type = string
+}

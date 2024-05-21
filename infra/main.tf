@@ -15,7 +15,8 @@ resource "random_string" "generated" {
 
 locals {
   affix      = random_string.generated.result
-  workload   = "contoso-${local.affix}"
+  app        = "contoso"
+  workload   = "${local.app}-${local.affix}"
   public_key = file("keys/temp_key.pub")
 }
 
@@ -65,14 +66,22 @@ module "webapp" {
   mssql_database_name               = module.mssql.database_name
 }
 
-module "vm_linux" {
-  count               = var.enable_virtual_machine ? 1 : 0
-  source              = "./modules/vm"
-  workload            = local.workload
+module "acr" {
+  source              = "./modules/acr"
+  workload            = "${local.app}${local.affix}"
   resource_group_name = azurerm_resource_group.default.name
   location            = azurerm_resource_group.default.location
-  subnet_id           = module.vnet.default_subnet_id
-  size                = var.vm_linux_size
-  image_sku           = var.vm_linux_image_sku
-  public_key          = local.public_key
+}
+
+module "vm_linux" {
+  count                 = var.enable_virtual_machine ? 1 : 0
+  source                = "./modules/vm"
+  workload              = local.workload
+  resource_group_name   = azurerm_resource_group.default.name
+  location              = azurerm_resource_group.default.location
+  subnet_id             = module.vnet.default_subnet_id
+  size                  = var.vm_linux_size
+  image_sku             = var.vm_linux_image_sku
+  public_key            = local.public_key
+  container_registry_id = module.acr.id
 }
