@@ -20,13 +20,13 @@ chmod 600 infra/keys/temp_key
 
 Create the infrastructure:
 
-> [!NOTE]
-> App Service health checks will show as unhealthy until the app is deployed, as the health check path is configured to be at `/healthz`.
-
 ```sh
 terraform -chdir="infra" init
 terraform -chdir="infra" apply -auto-approve
 ```
+
+> [!NOTE]
+> App Service health checks will show as unhealthy until the app is deployed, as the health check path is configured to be at `/healthz`.
 
 ## Permissions: App Service
 
