@@ -18,6 +18,10 @@ output "webapp_identity_tenant_id" {
   value = var.enable_webapp ? module.webapp[0].webapp_identity_tenant_id : null
 }
 
+output "mssql_fqdn" {
+  value = module.mssql.fully_qualified_domain_name
+}
+
 output "mssql_database_name" {
   value = module.mssql.database_name
 }
