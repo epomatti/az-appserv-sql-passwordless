@@ -127,6 +127,25 @@ sudo docker pull crcontosojqanh.azurecr.io/icecream:latest
 sudo docker run -p 8080:8080 crcontosojqanh.azurecr.io/icecream:latest
 ```
 
+Get the connectivity configuration:
+
+```sh
+mkdir /tmp/icecream-webapi
+```
+
+Copy the configuration from Key Vault:
+
+```sh
+az keyvault secret show -n docker-container-config --vault-name kv-contoso-jqanh --query "value" --output tsv
+```
+
+Save it locally:
+
+```sh
+nano /tmp/icecream-webapi/config.json
+```
+
+
 
 
 ```sh

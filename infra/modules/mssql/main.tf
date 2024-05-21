@@ -13,28 +13,12 @@ resource "azurerm_mssql_server" "default" {
 
   public_network_access_enabled = var.public_network_access_enabled
 
-  # Administrator Login
-  # administrator_login          = var.admin_login
-  # administrator_login_password = var.admin_login_password
-
-
-
   azuread_administrator {
     azuread_authentication_only = true
     login_username              = data.azuread_user.current.user_principal_name
     object_id                   = data.azurerm_client_config.current.object_id
     tenant_id                   = data.azurerm_client_config.current.tenant_id
   }
-
-  # # Managed Identity
-  # primary_user_assigned_identity_id = azurerm_user_assigned_identity.mssql.id
-
-  # identity {
-  #   type         = "UserAssigned"
-  #   identity_ids = [azurerm_user_assigned_identity.mssql.id]
-  # }
-
-  # depends_on = [azurerm_role_assignment.key]
 }
 
 resource "azurerm_mssql_database" "default" {
