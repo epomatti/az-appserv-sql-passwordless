@@ -1,6 +1,6 @@
 # App Services passwordless SQL Database connection
 
-Full demonstration of how to connect from App Service via System-Assigned identity to Azure SQL Database. Guidelines used from [this article](https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-azure-database?tabs=sqldatabase%2Csystemassigned%2Cnetfx%2Cwindowsclient).
+App Service passwordless authentication to Azure SQL Database with Microsoft Entra authentication.
 
 ## Infrastructure
 
@@ -25,18 +25,21 @@ terraform -chdir="infra" init
 terraform -chdir="infra" apply -auto-approve
 ```
 
-## Permissions
+## App Service permissions
 
-Following the commands: https://learn.microsoft.com/en-us/azure/azure-sql/database/authentication-azure-ad-logins-tutorial?view=azuresql
+Whe using **System-Assigned** managed identity, the configuration uses the App Service **name** as login.
 
 ### SQL Server
-use th **name** oof the app
+
+Create the login from an external provider:
 
 ```sql
-Use master
+use master
 CREATE LOGIN [app-contoso-8hkgb] FROM EXTERNAL PROVIDER
 GO
 ```
+
+Check the server login:
 
 ```sql
 SELECT name, type_desc, type, is_disabled 
@@ -46,15 +49,21 @@ WHERE type_desc like 'external%'
 
 ### SQL Database
 
+Create the database user associated with the external login:
+
 ```sql
 CREATE USER [app-contoso-8hkgb] FROM LOGIN [app-contoso-8hkgb]
 ```
+
+Check the database user:
 
 ```sql
 SELECT name, type_desc, type 
 FROM sys.database_principals 
 WHERE type_desc like 'external%'
 ```
+
+Add the necessary permissions to the user:
 
 ```sql
 ALTER ROLE db_datareader ADD MEMBER [app-contoso-8hkgb];
@@ -63,103 +72,20 @@ ALTER ROLE db_ddladmin ADD MEMBER [app-contoso-8hkgb];
 GO
 ```
 
+## Deploy the application
 
-
-
-
-
-
+Enter the application directory, then build and deploy the application:
 
 ```sh
 bash build.sh
 az webapp deploy -g rg-contoso-8hkgb -n app-contoso-8hkgb --type zip --src-path ./bin/webapi.zip
 ```
 
+Once deployed, test the database connectivity:
+
+```sh
 curl <appservice>/api/icecream
-
-
-
-
-
-
-
-
-
-
-
-Create the base resources:
-
-```sh
-# Resource Group
-az group create -n rgapp -l eastus
-
-# File share for Cloud Shell to assign the identity later - not needed if you already have one
-az storage account create -n stpassless789cloudshell -g rgapp -l eastus --sku Standard_LRS
-az storage share create -n cloudshell --account-name stpassless789cloudshell
 ```
-
-Create the App Service admin user:
-
-```sh
-az ad user create --display-name appservadmin --password P4ssw0rd789 --user-principal-name appservadmin@<yourdomain>
-```
-
-Create SQL Database:
-
-```sh
-az sql server create -g rgapp -n sqlspassworldless789 -l eastus --admin-user sqladmin --admin-password P4ssw0rd789
-az sql server firewall-rule create -g rgapp -s sqlspassworldless789 -n AllowAll --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.0
-az sql db create -g rgapp -s sqlspassworldless789 -n sqldbpassworldless789 --sample-name AdventureWorksLT --edition Basic --capacity 5 --bsr Local
-```
-
-Add the AD admin previously created to the SQL Database server
-
-```sh
-az sql server ad-admin create -g rgapp -s sqlspassworldless789 --display-name ADMIN --object-id <id>
-```
-
-Create the App Service:
-
-```sh
-az appservice plan create -g rgapp -n planapp --is-linux --sku B1
-az webapp create -g rgapp -p planapp -n apppassworldless789 -r "DOTNETCORE:7.0" --https-only
-az webapp config set -g rgapp -n apppassworldless789 --always-on true
-```
-
-Assign the system identity:
-
-```sh
-az webapp identity assign -g rgapp -n apppassworldless789
-```
-
-Connect to the SQL Server using Cloud Shell and create the properties:
-
-```
-sqlcmd -S sqlspassworldless789.database.windows.net -d sqldbpassworldless789 -U <aad-user-name> -P "<aad-password>" -G -l 30
-
-CREATE USER apppassworldless789 FROM EXTERNAL PROVIDER;
-ALTER ROLE db_datareader ADD MEMBER apppassworldless789;
-ALTER ROLE db_datawriter ADD MEMBER apppassworldless789;
-ALTER ROLE db_ddladmin ADD MEMBER apppassworldless789;
-GO
-```
-
-
-Add the required app settings (environment variables):
-
-```
-az webapp config appsettings set -g rgapp -n apppassworldless789 \
-        --settings WEBSITE_RUN_FROM_PACKAGE=1
-```
-
-Build and deploy the ASP.NET Core application:
-
-```
-bash build.sh
-az webapp deployment source config-zip -g rgapp -n apppassworldless789 --src ./bin/webapi.zip
-```
-
-Once ready, call the `/api/icecream` endpoint.
 
 ## Database-level roles
 
@@ -192,6 +118,21 @@ ALTER ROLE db_datareader ADD MEMBER [USERNAME];
 ```
 
 User is ready. It is necessary to inform the database name during authentication.
+
+
+## Clean-up
+
+Delete the Azure resources:
+
+```sh
+terraform destroy -auto-approve
+```
+
+## Reference
+
+- [Create and utilize Microsoft Entra server logins](https://learn.microsoft.com/en-us/azure/azure-sql/database/authentication-azure-ad-logins-tutorial?view=azuresql)
+- [Connect to Azure databases from App Service without secrets using a managed identity](https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-azure-database?tabs=sqldatabase%2Csystemassigned%2Cnetfx%2Cwindowsclient)
+
 
 [1]: https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/database-level-roles
 [2]: https://www.sqlnethub.com/blog/creating-azure-sql-database-logins-and-users/
