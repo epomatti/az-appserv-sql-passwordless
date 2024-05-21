@@ -93,6 +93,9 @@ curl <appservice>/api/icecream
 
 ## Virtual Machine + Docker
 
+> [!NOTE]
+> Steps for this configuration are detailed in [this][5] article.
+
 To create the Virtual Machine, change the control variable and `apply`.
 
 ```terraform
@@ -175,3 +178,4 @@ terraform destroy -auto-approve
 [2]: https://www.sqlnethub.com/blog/creating-azure-sql-database-logins-and-users/
 [3]: https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli-managed-identity
 [4]: https://github.com/Azure/acr/issues/367#issuecomment-614232197
+[5]: https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication-managed-identity?tabs=azure-cli
