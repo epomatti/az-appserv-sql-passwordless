@@ -3,6 +3,11 @@ variable "location" {
   type = string
 }
 
+### App Service ###
+variable "webapp_plan_sku_name" {
+  type = string
+}
+
 ### Virtual Machine ###
 variable "enable_virtual_machine" {
   type = bool

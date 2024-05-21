@@ -16,6 +16,29 @@ resource "azurerm_subnet" "default" {
   address_prefixes     = ["${local.cidr_prefix}.10.0/24"]
 }
 
+resource "azurerm_subnet" "web" {
+  name                 = "web"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.default.name
+  address_prefixes     = ["${local.cidr_prefix}.20.0/24"]
+
+  delegation {
+    name = "web"
+
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
+}
+
+resource "azurerm_subnet" "private_endpoints" {
+  name                 = "private-endpoints"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.default.name
+  address_prefixes     = ["10.0.90.0/24"]
+}
+
 ### Network Security Group ###
 resource "azurerm_network_security_group" "default" {
   name                = "nsg-default"

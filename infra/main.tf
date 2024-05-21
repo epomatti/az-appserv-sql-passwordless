@@ -31,6 +31,15 @@ module "vnet" {
   location            = azurerm_resource_group.default.location
 }
 
+module "webapp" {
+  source              = "./modules/webapp"
+  workload            = local.workload
+  resource_group_name = azurerm_resource_group.default.name
+  location            = azurerm_resource_group.default.location
+  sku_name            = var.webapp_plan_sku_name
+  subnet_id           = module.vnet.webapp_subnet_id
+}
+
 module "vm_linux" {
   count               = var.enable_virtual_machine ? 1 : 0
   source              = "./modules/vm"
