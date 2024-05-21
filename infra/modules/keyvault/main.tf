@@ -5,6 +5,8 @@ locals {
   object_id = data.azurerm_client_config.current.object_id
 
   config = jsonencode({
+    "mssqlServer" : "${var.mssql_fqdn}",
+    "mssqlDatabase" : "${var.mssql_database}",
     "tenantId" : "${local.tenant_id}",
     "appId" : "${var.docker_container_app_id}",
     "appPassword" : "${var.docker_container_app_password}"
@@ -65,7 +67,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "keyvault" {
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.keyvault.name
   virtual_network_id    = var.vnet_id
-  registration_enabled  = true
+  registration_enabled  = false
 }
 
 resource "azurerm_private_endpoint" "keyvault" {

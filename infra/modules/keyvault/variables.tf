@@ -34,3 +34,11 @@ variable "vnet_id" {
 variable "private_endpoints_subnet_id" {
   type = string
 }
+
+variable "mssql_fqdn" {
+  type = string
+}
+
+variable "mssql_database" {
+  type = string
+}

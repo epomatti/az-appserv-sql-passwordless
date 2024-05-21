@@ -108,4 +108,6 @@ module "keyvault" {
   docker_container_app_password         = module.entra.docker_container_app_password
   vnet_id                               = module.vnet.vnet_id
   private_endpoints_subnet_id           = module.vnet.private_endpoints_subnet_id
+  mssql_fqdn                            = module.mssql.fully_qualified_domain_name
+  mssql_database                        = module.mssql.database_name
 }
