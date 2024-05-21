@@ -1,27 +1,17 @@
 ### General ###
-location = "eastus2"
+location         = "eastus2"
+admin_ip_address = ""
 
-### VNET ###
-aws_vpc_cidr                           = "10.0.0.0/16"
-aws_remote_gateway_ip_address_tunnel_1 = ""
-aws_remote_gateway_ip_address_tunnel_2 = ""
-local_administrator_ip_address         = ""
+### Azure SQL Databasea ###
+mssql_public_network_access_enabled = true
+mssql_sku                           = "Basic"
+mssql_max_size_gb                   = 2
+
+### App Service ###
+enable_webapp        = false
+webapp_plan_sku_name = "B2"
 
 ### Virtual Machine ###
 enable_virtual_machine = true
-vm_linux_size          = "Standard_B2pts_v2"
-vm_linux_image_sku     = "22_04-lts-arm64"
-
-### Firewall ###
-enable_firewall  = true
-firewall_name    = "pfsense"
-firewall_vm_size = "Standard_B2als_v2"
-
-firewall_image_publisher = "netgate"
-firewall_image_offer     = "pfsense-plus-public-cloud-fw-vpn-router"
-firewall_image_sku       = "pfsense-plus-public-tac-lite"
-firewall_image_version   = "latest"
-
-firewall_plan_name      = "pfsense-plus-public-tac-lite"
-firewall_plan_publisher = "netgate"
-firewall_plan_product   = "pfsense-plus-public-cloud-fw-vpn-router"
+vm_linux_size          = "Standard_B2as_v2"
+vm_linux_image_sku     = "22_04-lts"
