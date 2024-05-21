@@ -16,6 +16,10 @@ resource "azurerm_linux_web_app" "main" {
   https_only                    = true
   virtual_network_subnet_id     = var.subnet_id
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   site_config {
     always_on         = true
     health_check_path = "/"
