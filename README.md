@@ -20,12 +20,15 @@ chmod 600 infra/keys/temp_key
 
 Create the infrastructure:
 
+> [!NOTE]
+> App Service health checks will show as unhealthy until the app is deployed, as the health check path is configured to be at `/healthz`.
+
 ```sh
 terraform -chdir="infra" init
 terraform -chdir="infra" apply -auto-approve
 ```
 
-## App Service permissions
+## Permissions: App Service
 
 Whe using **System-Assigned** managed identity, the configuration uses the App Service **name** as login.
 
@@ -34,7 +37,7 @@ Whe using **System-Assigned** managed identity, the configuration uses the App S
 Create the login from an external provider:
 
 ```sql
-use master
+USE master
 CREATE LOGIN [app-contoso-8hkgb] FROM EXTERNAL PROVIDER
 GO
 ```
@@ -53,6 +56,7 @@ Create the database user associated with the external login:
 
 ```sql
 CREATE USER [app-contoso-8hkgb] FROM LOGIN [app-contoso-8hkgb]
+GO
 ```
 
 Check the database user:
