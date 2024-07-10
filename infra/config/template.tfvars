@@ -9,9 +9,9 @@ mssql_max_size_gb                   = 2
 
 ### App Service ###
 enable_webapp        = false
-webapp_plan_sku_name = "B2"
+webapp_plan_sku_name = "P1v3"
 
 ### Virtual Machine ###
 enable_virtual_machine = true
-vm_linux_size          = "Standard_B2as_v2"
+vm_linux_size          = "Standard_B2s_v2"
 vm_linux_image_sku     = "22_04-lts"
